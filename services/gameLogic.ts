@@ -1,17 +1,19 @@
-// Fix: Provide content for gameLogic.ts, containing core game state manipulation functions.
-import { GameState, SpinResult } from '../types';
-import { INITIAL_PLANETS } from '../constants';
+import { GameState, SpinResult, Planet, Opponent } from '../types';
+import { INITIAL_PLANETS, OPPONENTS_DATA } from '../constants';
 
 export const getInitialGameState = (): GameState => ({
-  kibble: 1000,
+  kibble: 10000,
   spins: 10,
   maxSpins: 10,
   shields: 1,
-  planets: JSON.parse(JSON.stringify(INITIAL_PLANETS)), // Deep copy to avoid mutation
+  planets: JSON.parse(JSON.stringify(INITIAL_PLANETS)), // Deep copy
   currentPlanetIndex: 0,
+  opponents: JSON.parse(JSON.stringify(OPPONENTS_DATA)), // Deep copy
+  gamePhase: 'spinning',
+  eventLog: ['Welcome to Cosmic Corgis! 🚀'],
 });
 
-export const handleSpinResult = (state: GameState, result: SpinResult): { newState: GameState; logMessage: string } => {
+export const processSpinResult = (state: GameState, result: SpinResult): { newState: GameState; logMessage: string } => {
   let newState = { ...state };
   let logMessage = '';
 
@@ -32,10 +34,12 @@ export const handleSpinResult = (state: GameState, result: SpinResult): { newSta
       }
       break;
     case 'play_fetch':
-      logMessage = 'Play Fetch! Attack another player!';
+      newState.gamePhase = 'attacking';
+      logMessage = 'Play Fetch! Choose a rival to attack!';
       break;
     case 'leave_puddle':
-      logMessage = 'Leave Puddle! Steal from another player!';
+      newState.gamePhase = 'raiding';
+      logMessage = 'Leave Puddle! Choose a rival to steal from!';
       break;
   }
   
@@ -46,9 +50,9 @@ export const handleSpinResult = (state: GameState, result: SpinResult): { newSta
   return { newState, logMessage };
 };
 
-export const handleBuild = (state: GameState): { newState: GameState; logMessage: string } => {
+export const processBuild = (state: GameState): { newState: GameState; logMessage: string | null } => {
     let newState = { ...state };
-    let logMessage = '';
+    let logMessage: string | null = null;
     
     const currentPlanet = newState.planets[newState.currentPlanetIndex];
     const nextBuilding = currentPlanet.buildings.find(b => !b.built);
@@ -56,22 +60,46 @@ export const handleBuild = (state: GameState): { newState: GameState; logMessage
     if (nextBuilding && newState.kibble >= nextBuilding.cost) {
         newState.kibble -= nextBuilding.cost;
         const buildingIndex = currentPlanet.buildings.findIndex(b => b.name === nextBuilding.name);
-        if (buildingIndex !== -1) {
-            // Create new arrays/objects for immutability
-            const newPlanets = [...newState.planets];
-            const newCurrentPlanet = {...newPlanets[newState.currentPlanetIndex]};
-            const newBuildings = [...newCurrentPlanet.buildings];
-            newBuildings[buildingIndex] = {...newBuildings[buildingIndex], built: true};
-            newCurrentPlanet.buildings = newBuildings;
-            newPlanets[newState.currentPlanetIndex] = newCurrentPlanet;
-            newState.planets = newPlanets;
-        }
+        
+        // Deep copy for immutability
+        const newPlanets = JSON.parse(JSON.stringify(newState.planets));
+        newPlanets[newState.currentPlanetIndex].buildings[buildingIndex].built = true;
+        newState.planets = newPlanets;
+        
         logMessage = `You built the ${nextBuilding.name} on ${currentPlanet.name}!`;
+
+        const allBuilt = newPlanets[newState.currentPlanetIndex].buildings.every((b: { built: any; }) => b.built);
+        if (allBuilt) {
+            logMessage += ` 🎉 Planet complete! You've earned a bonus 500,000 Kibble!`;
+            newState.kibble += 500000;
+        }
+
     } else if (nextBuilding) {
         logMessage = `Not enough Kibble to build ${nextBuilding.name}!`;
-    } else {
-        logMessage = `All buildings on ${currentPlanet.name} are complete!`;
     }
 
     return { newState, logMessage };
+};
+
+
+export const processRaid = (state: GameState, opponent: Opponent): { newState: GameState; logMessage: string } => {
+  const kibbleStolen = Math.floor(opponent.kibble * 0.25); // Steal 25%
+  const newState = {
+    ...state,
+    kibble: state.kibble + kibbleStolen,
+    gamePhase: 'spinning' as const,
+  };
+  const logMessage = `💧 You left a puddle at ${opponent.planetName} and stole ${kibbleStolen.toLocaleString()} kibble from ${opponent.name}!`;
+  return { newState, logMessage };
+};
+
+export const processAttack = (state: GameState, opponent: Opponent): { newState: GameState; logMessage: string } => {
+  const kibbleWon = 50000;
+  const newState = {
+    ...state,
+    kibble: state.kibble + kibbleWon,
+    gamePhase: 'spinning' as const,
+  };
+  const logMessage = `🎾 You played fetch with ${opponent.name} at ${opponent.planetName} and won ${kibbleWon.toLocaleString()} kibble!`;
+  return { newState, logMessage };
 };

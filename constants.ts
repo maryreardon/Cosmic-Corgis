@@ -1,5 +1,5 @@
 // Fix: Provide content for constants.ts, defining spinner rewards and initial planet data.
-import { SpinResult, Planet } from './types';
+import { SpinResult, Planet, Opponent } from './types';
 
 export const SPINNER_REWARDS: SpinResult[] = [
   { type: 'kibble', value: 1000 },
@@ -24,4 +24,10 @@ export const INITIAL_PLANETS: Planet[] = [
       ],
     },
     // Future planets can be added here
+];
+
+export const OPPONENTS_DATA: Opponent[] = [
+    { id: 1, name: "Admiral Fluffington", kibble: 25000, planetName: "Fort Bark" },
+    { id: 2, name: "Sir Waggington", kibble: 78000, planetName: "The Kennel Klub" },
+    { id: 3, name: "Sergeant Scruffy", kibble: 1500, planetName: "Dirtopia" },
 ];

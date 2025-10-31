@@ -11,6 +11,15 @@ export interface Planet {
   buildings: Building[];
 }
 
+export interface Opponent {
+  id: number;
+  name: string;
+  kibble: number;
+  planetName: string;
+}
+
+export type GamePhase = 'spinning' | 'raiding' | 'attacking';
+
 export interface GameState {
   kibble: number;
   spins: number;
@@ -18,6 +27,9 @@ export interface GameState {
   shields: number;
   planets: Planet[];
   currentPlanetIndex: number;
+  opponents: Opponent[];
+  gamePhase: GamePhase;
+  eventLog: string[];
 }
 
 export interface SpinResult {

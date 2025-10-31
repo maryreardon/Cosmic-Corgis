@@ -1,5 +1,5 @@
 import React from 'react';
-import { GameState, Building } from '../types';
+import { GameState } from '../types';
 
 interface PlanetViewProps {
   gameState: GameState;
@@ -7,46 +7,46 @@ interface PlanetViewProps {
 }
 
 const PlanetView: React.FC<PlanetViewProps> = ({ gameState, onBuild }) => {
-    const { planets, currentPlanetIndex, kibble } = gameState;
-    const currentPlanet = planets[currentPlanetIndex];
-    const nextBuilding = currentPlanet.buildings.find(b => !b.built);
-    const canBuild = nextBuilding && kibble >= nextBuilding.cost;
-    const isPlanetComplete = !nextBuilding;
+  const currentPlanet = gameState.planets[gameState.currentPlanetIndex];
+  const nextBuilding = currentPlanet.buildings.find(b => !b.built);
+  const buildingsComplete = currentPlanet.buildings.filter(b => b.built).length;
+  const totalBuildings = currentPlanet.buildings.length;
+  const planetComplete = buildingsComplete === totalBuildings;
+
+  const canAfford = nextBuilding ? gameState.kibble >= nextBuilding.cost : false;
 
   return (
-    <div className="w-full max-w-lg bg-space-light/70 backdrop-blur-sm rounded-xl p-6 border-2 border-slate-500/50 shadow-2xl">
-        <h2 className="text-center text-3xl font-display text-amber-300 tracking-wider">
-            {currentPlanet.name}
-        </h2>
-        
-        <div className="mt-4 grid grid-cols-5 gap-4">
-            {currentPlanet.buildings.map((building, index) => (
-                <div key={index} className={`flex flex-col items-center p-2 rounded-lg transition-all ${building.built ? 'bg-green-500/50' : 'bg-slate-700/50'}`}>
-                    <span className="text-4xl" style={{ filter: building.built ? 'none' : 'grayscale(100%) opacity(0.6)'}}>
-                        {['🏠', '🦴', '📦', '💧', '🗿'][index]}
-                    </span>
-                    <p className="text-xs text-center text-white/80 mt-1 h-8">{building.name}</p>
-                </div>
-            ))}
+    <div className="w-full max-w-lg animate-slide-up">
+      <div className="bg-space-light/50 backdrop-blur-sm p-4 rounded-xl border border-slate-600/50">
+        <div className="flex justify-between items-center mb-3">
+          <h2 className="text-2xl font-bold text-white">{currentPlanet.name}</h2>
+          <span className="text-sm font-semibold bg-slate-700/50 px-3 py-1 rounded-full">{buildingsComplete}/{totalBuildings} Built</span>
+        </div>
+
+        <div className="space-y-2 mb-4">
+          {currentPlanet.buildings.map((building) => (
+            <div
+              key={building.name}
+              className={`flex justify-between items-center p-2 rounded transition-all ${building.built ? 'bg-green-500/30 text-slate-300' : 'bg-space-dark/50'}`}
+            >
+              <span>{building.built ? '✅' : '🏗️'} {building.name}</span>
+              <span className={`font-bold ${building.built ? 'line-through' : ''}`}>
+                {building.cost.toLocaleString()} 🍖
+              </span>
+            </div>
+          ))}
         </div>
         
-        <div className="mt-6">
-            {isPlanetComplete ? (
-                <div className="text-center p-4 bg-green-500/50 rounded-lg">
-                    <p className="font-bold text-lg">Planet Complete!</p>
-                    <p className="text-sm">Ready to warp to the next galaxy!</p>
-                </div>
-            ) : (
-                <button
-                    onClick={onBuild}
-                    disabled={!canBuild}
-                    className="w-full py-3 font-bold text-lg rounded-lg shadow-lg bg-green-600 hover:bg-green-500 active:scale-95 transition-all disabled:bg-slate-600 disabled:cursor-not-allowed disabled:text-slate-400"
-                >
-                    Build {nextBuilding.name} <br/> 
-                    <span className="text-sm font-normal">(Cost: {nextBuilding.cost.toLocaleString()} 🍖)</span>
-                </button>
-            )}
-        </div>
+        <button
+          onClick={onBuild}
+          disabled={!canAfford || planetComplete}
+          className="w-full py-3 font-bold text-xl rounded-lg shadow-lg bg-green-600 hover:bg-green-500 active:scale-95 transition-all disabled:bg-slate-700 disabled:text-slate-400 disabled:cursor-not-allowed disabled:active:scale-100"
+        >
+          {planetComplete ? 'Planet Complete! 🎉' : (
+            nextBuilding ? `Build for ${nextBuilding.cost.toLocaleString()}` : 'Error'
+          )}
+        </button>
+      </div>
     </div>
   );
 };
