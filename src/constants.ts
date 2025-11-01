@@ -1,4 +1,3 @@
-// Fix: Provide content for constants.ts, defining spinner rewards and initial planet data.
 import { SpinResult, Planet, Opponent } from './types';
 
 export const SPINNER_REWARDS: SpinResult[] = [

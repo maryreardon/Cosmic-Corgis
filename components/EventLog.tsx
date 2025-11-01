@@ -1,3 +1,4 @@
+// Fix: Provide content for EventLog.tsx component.
 import React from 'react';
 
 interface EventLogProps {

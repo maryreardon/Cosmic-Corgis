@@ -1,5 +1,3 @@
-// Fix: Provide content for types.ts, defining shared types for the application.
-
 export interface Building {
   name: string;
   cost: number;
