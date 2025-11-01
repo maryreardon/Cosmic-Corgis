@@ -1,69 +1,26 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Cosmic Corgis</title>
-    
-    <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json" />
-    <meta name="theme-color" content="#1e293b">
-    
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="theme-color" content="#0f172a">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Bangers&display=swap" rel="stylesheet">
-
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            fontFamily: {
-              sans: ['Inter', 'sans-serif'],
-              display: ['Bangers', 'cursive'],
-            },
-            colors: {
-              space: {
-                'dark': '#0f172a',
-                'light': '#1e293b',
-              },
-              kibble: '#f59e0b',
-            },
-            animation: {
-              'fade-in': 'fadeIn 0.5s ease-out forwards',
-              'slide-up': 'slideUp 0.5s ease-out forwards',
-              'spinner-spin': 'spin-keyframes 3s cubic-bezier(0.3, 0.9, 0.5, 1) forwards',
-            },
-            keyframes: {
-              fadeIn: {
-                '0%': { opacity: 0 },
-                '100%': { opacity: 1 },
-              },
-              slideUp: {
-                '0%': { opacity: 0, transform: 'translateY(20px)' },
-                '100%': { opacity: 1, transform: 'translateY(0)' },
-              },
-              'spin-keyframes': {
-                  '0%': { transform: 'rotate(0deg)' },
-                  '100%': { transform: 'var(--final-rotation)' },
-              },
-            }
-          }
-        }
-      }
-    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
       body {
-        background-color: #0f172a;
-        background-image:
-          radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 40px),
-          radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 30px),
-          radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 40px),
-          radial-gradient(rgba(255,255,255,.4), rgba(255,255,255,.1) 2px, transparent 30px);
-        background-size: 550px 550px, 350px 350px, 250px 250px, 150px 150px;
-        background-position: 0 0, 40px 60px, 130px 270px, 70px 100px;
+        background-color: #020617; /* slate-950 */
+        background-image: 
+          radial-gradient(white, rgba(255,255,255,0) 0.5px),
+          radial-gradient(white, rgba(255,255,255,0) 0.5px);
+        background-size: 20px 20px, 30px 30px;
+        background-position: 0 0, 15px 15px;
       }
+      .font-display { font-family: 'Orbitron', sans-serif; }
+      .font-sans { font-family: 'Roboto', sans-serif; }
     </style>
   <script type="importmap">
 {
@@ -71,14 +28,15 @@
     "react": "https://aistudiocdn.com/react@^19.2.0",
     "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
     "react/": "https://aistudiocdn.com/react@^19.2.0/",
-    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.28.0"
+    "vite": "https://aistudiocdn.com/vite@^7.1.12",
+    "@vitejs/plugin-react": "https://aistudiocdn.com/@vitejs/plugin-react@^5.1.0"
   }
 }
 </script>
 </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/index.tsx"></script>
+    <script type="module" src="/src/index.tsx"></script>
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
