@@ -34,3 +34,7 @@
 :root {
   --final-rotation: 360deg;
 }
+
+body {
+    -webkit-tap-highlight-color: transparent;
+}
