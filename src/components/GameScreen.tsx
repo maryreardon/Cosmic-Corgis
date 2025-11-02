@@ -83,7 +83,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameState, onSpin, onBuild, onA
   );
 
   return (
-    <main className="flex-grow px-4 py-8 flex flex-col items-center gap-8">
+    <main className="flex-grow container mx-auto px-4 py-8 flex flex-col items-center gap-8">
       {gameState.gamePhase === 'spinning' ? (
         <>
           <ViewToggle />

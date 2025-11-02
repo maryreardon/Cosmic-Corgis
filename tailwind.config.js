@@ -29,15 +29,15 @@ export default {
             to: { opacity: '1', transform: 'translateY(0)' },
         },
         'float': {
-            '0%, 100%': { transform: 'translateY(-4%)' },
-            '50%': { transform: 'translateY(4%)' },
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-8px)' },
         }
       },
       animation: {
         'spinner-spin': 'spinner-spin 3s cubic-bezier(0.25, 0.1, 0.25, 1) forwards',
         'fade-in': 'fade-in 0.5s ease-out forwards',
         'slide-up': 'slide-up 0.5s ease-out forwards',
-        'float': 'float 4s ease-in-out infinite',
+        'float': 'float 3s ease-in-out infinite',
       },
       transitionDuration: {
         '3000': '3000ms',

@@ -1,67 +1,43 @@
 import React from 'react';
 import { GameState } from '../types';
 
-// --- New CorgiAstronaut Component ---
-const CorgiAstronaut: React.FC = () => (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 150 150"
-      className="w-36 h-36 drop-shadow-lg animate-float"
-      aria-label="A cute corgi wearing an astronaut helmet."
-      role="img"
-    >
-      <g>
-        {/* Helmet Glass */}
-        <circle cx="75" cy="75" r="50" fill="#e0f2fe" opacity="0.5" />
-  
-        {/* Corgi Body */}
-        <path d="M50,110 a25,25 0 0,1 50,0 Z" fill="#f97316" />
-        {/* Front Paws */}
-         <rect x="60" y="105" width="10" height="15" rx="5" fill="#ea580c" />
-         <rect x="80" y="105" width="10" height="15" rx="5" fill="#ea580c" />
-  
-  
-        {/* Corgi Head */}
-        <circle cx="75" cy="75" r="35" fill="#fb923c" />
-  
-        {/* Ears */}
-        <path d="M 50,45 L 65,30 L 70,50 Z" fill="#f97316" stroke="#ea580c" strokeWidth="2" />
-        <path d="M 100,45 L 85,30 L 80,50 Z" fill="#f97316" stroke="#ea580c" strokeWidth="2" />
-  
-        {/* Muzzle */}
-        <path
-          d="M75,80 a15,12 0 0,1 0,15 a15,12 0 0,1 0,-15"
-          transform="translate(0, -5)"
-          fill="#fff"
-        />
-        
-        {/* Eyes */}
-        <circle cx="65" cy="70" r="4" fill="#27272a" />
-        <circle cx="85" cy="70" r="4" fill="#27272a" />
-  
-        {/* Nose */}
-        <circle cx="75" cy="82" r="3" fill="#27272a" />
-        
-         {/* Smile */}
-        <path d="M 70 90 Q 75 95 80 90" stroke="#27272a" strokeWidth="1.5" fill="none" strokeLinecap="round" />
-  
-        {/* Helmet Rim */}
-        <circle
-          cx="75"
-          cy="75"
-          r="50"
-          fill="none"
-          stroke="#94a3b8"
-          strokeWidth="5"
-        />
-      </g>
-    </svg>
-  );
-
 interface PlanetViewProps {
   gameState: GameState;
   onBuild: () => void;
 }
+
+const CorgiAvatar = () => (
+    <div className="relative mx-auto mb-2 w-32 h-32 animate-float">
+        <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-lg">
+            {/* Helmet Glass */}
+            <circle cx="50" cy="45" r="28" fill="rgba(203, 213, 225, 0.7)" stroke="#94a3b8" strokeWidth="2" />
+            
+            {/* Corgi Head */}
+            <g transform="translate(0, 5)">
+                <path d="M 35 80 C 25 80, 20 60, 30 50 L 70 50 C 80 60, 75 80, 65 80 Z" fill="#d97706" />
+                <path d="M 40 50 Q 50 40, 60 50" fill="#d97706" />
+                
+                {/* Ears */}
+                <path d="M 30 50 L 25 30 L 40 45 Z" fill="#d97706" stroke="#854d0e" strokeWidth="1.5" />
+                <path d="M 70 50 L 75 30 L 60 45 Z" fill="#d97706" stroke="#854d0e" strokeWidth="1.5" />
+                
+                {/* Face details */}
+                <path d="M 38 78 C 35 70, 65 70, 62 78 Z" fill="#fef3c7" />
+                
+                {/* Eyes */}
+                <circle cx="42" cy="58" r="3" fill="#1e293b" />
+                <circle cx="58" cy="58" r="3" fill="#1e293b" />
+                
+                {/* Nose */}
+                <ellipse cx="50" cy="65" rx="4" ry="3" fill="#1e293b" />
+
+                {/* Mouth */}
+                <path d="M 45 72 Q 50 75, 55 72" stroke="#1e293b" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+            </g>
+        </svg>
+    </div>
+);
+
 
 const PlanetView: React.FC<PlanetViewProps> = ({ gameState, onBuild }) => {
   const currentPlanet = gameState.planets[gameState.currentPlanetIndex];
@@ -74,16 +50,12 @@ const PlanetView: React.FC<PlanetViewProps> = ({ gameState, onBuild }) => {
 
   return (
     <div className="w-full max-w-lg animate-slide-up">
-      <div className="flex justify-center mb-4">
-        <CorgiAstronaut />
-      </div>
-      <div className="bg-space-light/50 backdrop-blur-sm p-4 rounded-xl border border-slate-600/50">
-        <div className="flex justify-between items-center mb-3">
-          <h2 className="text-2xl font-bold text-white">{currentPlanet.name}</h2>
-          <span className="text-sm font-semibold bg-slate-700/50 px-3 py-1 rounded-full">{buildingsComplete}/{totalBuildings} Built</span>
-        </div>
-
-        <div className="space-y-2 mb-4">
+      <div className="bg-space-light/50 backdrop-blur-sm p-4 pt-0 rounded-xl border border-slate-600/50 text-center">
+        <CorgiAvatar />
+        <h2 className="text-2xl font-bold text-white -mt-4">{currentPlanet.name}</h2>
+        <span className="text-sm font-semibold bg-slate-700/50 px-3 py-1 rounded-full">{buildingsComplete}/{totalBuildings} Built</span>
+        
+        <div className="space-y-2 my-4 text-left">
           {currentPlanet.buildings.map((building) => (
             <div
               key={building.name}
