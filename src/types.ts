@@ -1,7 +1,13 @@
+export interface Corgi {
+  name: string;
+  bio: string;
+}
+
 export interface Building {
   name: string;
   cost: number;
   built: boolean;
+  type?: 'structure' | 'corgi_rescue';
 }
 
 export interface Planet {
@@ -28,6 +34,7 @@ export interface GameState {
   opponents: Opponent[];
   gamePhase: GamePhase;
   eventLog: string[];
+  rescuedCorgis: Corgi[];
   lastDailyReward?: string; // YYYY-MM-DD
 }
 

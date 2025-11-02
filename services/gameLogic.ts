@@ -11,6 +11,7 @@ export const getInitialGameState = (): GameState => ({
   opponents: JSON.parse(JSON.stringify(OPPONENTS_DATA)), // Deep copy
   gamePhase: 'spinning',
   eventLog: ['Welcome to Cosmic Corgis! 🚀'],
+  rescuedCorgis: [],
 });
 
 export const processSpinResult = (state: GameState, result: SpinResult): { newState: GameState; logMessage: string } => {
@@ -50,9 +51,10 @@ export const processSpinResult = (state: GameState, result: SpinResult): { newSt
   return { newState, logMessage };
 };
 
-export const processBuild = (state: GameState): { newState: GameState; logMessage: string | null } => {
+export const processBuild = (state: GameState): { newState: GameState; logMessage: string | null; corgiToRescue: boolean; } => {
     let newState = { ...state };
     let logMessage: string | null = null;
+    let corgiToRescue = false;
     
     const currentPlanet = newState.planets[newState.currentPlanetIndex];
     const nextBuilding = currentPlanet.buildings.find(b => !b.built);
@@ -68,6 +70,11 @@ export const processBuild = (state: GameState): { newState: GameState; logMessag
         
         logMessage = `You built the ${nextBuilding.name} on ${currentPlanet.name}!`;
 
+        if (nextBuilding.type === 'corgi_rescue') {
+            corgiToRescue = true;
+            logMessage += ' A rescue signal was sent! 📡';
+        }
+
         const allBuilt = newPlanets[newState.currentPlanetIndex].buildings.every((b: { built: any; }) => b.built);
         if (allBuilt) {
             logMessage += ` 🎉 Planet complete! You've earned a bonus 500,000 Kibble!`;
@@ -78,7 +85,7 @@ export const processBuild = (state: GameState): { newState: GameState; logMessag
         logMessage = `Not enough Kibble to build ${nextBuilding.name}!`;
     }
 
-    return { newState, logMessage };
+    return { newState, logMessage, corgiToRescue };
 };
 
 

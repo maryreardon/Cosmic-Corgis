@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { GoogleGenAI, Type } from "@google/genai";
 import Header from './components/Header';
 import GameScreen from './components/GameScreen';
-import { GameState, SpinResult, Opponent } from './types';
+import CorgiAvatar from './components/CorgiAvatar';
+import { GameState, SpinResult, Opponent, Corgi } from './types';
 import { getInitialGameState, processSpinResult, processBuild, processRaid, processAttack } from './services/gameLogic';
 
 const GAME_STATE_KEY = 'cosmicCorgisGameState';
@@ -75,6 +77,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => (
                 <h3 className="font-bold text-white mb-1">How to Play</h3>
                 <p>🌀 Spin to win Star Kibble and other rewards.</p>
                 <p>🏗️ Use Kibble to build up your planets.</p>
+                <p>🐾 Build Rescue Beacons to find new corgis!</p>
                 <p>🎾 Attack rivals to earn big bonuses.</p>
                 <p>💧 Raid rivals to steal a portion of their Kibble.</p>
                 <p>🛡️ Shields protect you from attacks!</p>
@@ -135,6 +138,39 @@ const DailyRewardModal: React.FC<DailyRewardModalProps> = ({ isOpen, onClaim }) 
     </Modal>
 );
 
+// --- Corgi Rescue Modals ---
+const GeneratingCorgiModal: React.FC<{ isOpen: boolean }> = ({ isOpen }) => (
+  <Modal title="Contacting Corg-stellation..." isOpen={isOpen} onClose={() => {}} hideCloseButton>
+    <div className="flex flex-col items-center gap-4 text-slate-300">
+      <div className="w-16 h-16 border-4 border-amber-300 border-t-transparent rounded-full animate-spin"></div>
+      <p>A new friend is warping in!</p>
+    </div>
+  </Modal>
+);
+
+interface NewCorgiModalProps {
+  corgi: Corgi | null;
+  onClose: () => void;
+}
+const NewCorgiModal: React.FC<NewCorgiModalProps> = ({ corgi, onClose }) => {
+  if (!corgi) return null;
+
+  return (
+    <Modal title={`You rescued ${corgi.name}!`} isOpen={!!corgi} onClose={onClose}>
+      <div className="flex flex-col items-center gap-4">
+        <CorgiAvatar className="w-32 h-32" />
+        <p className="text-lg text-slate-300 italic">"{corgi.bio}"</p>
+        <button 
+          onClick={onClose}
+          className="w-full mt-2 py-3 font-bold text-xl rounded-lg shadow-lg bg-sky-600 hover:bg-sky-500 active:scale-95 transition-all"
+        >
+          Awesome!
+        </button>
+      </div>
+    </Modal>
+  );
+};
+
 
 // --- Main App Component ---
 const App: React.FC = () => {
@@ -151,6 +187,8 @@ const App: React.FC = () => {
   const [isSettingsOpen, setSettingsOpen] = useState(false);
   const [isShopOpen, setShopOpen] = useState(false);
   const [isDailyRewardOpen, setDailyRewardOpen] = useState(false);
+  const [isGeneratingCorgi, setIsGeneratingCorgi] = useState(false);
+  const [newlyRescuedCorgi, setNewlyRescuedCorgi] = useState<Corgi | null>(null);
 
   // Save state on change
   useEffect(() => {
@@ -164,6 +202,50 @@ const App: React.FC = () => {
     }));
   }, []);
 
+  const handleCorgiRescue = async () => {
+    setIsGeneratingCorgi(true);
+    try {
+        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+        const response = await ai.models.generateContent({
+            model: "gemini-2.5-flash",
+            contents: "Generate a cute and funny name and a short, quirky bio for a space corgi astronaut. The corgi is part of a game called Cosmic Corgis. Make the name space-themed or punny. The bio should be 1-2 sentences. Return the response as a JSON object with 'name' and 'bio' keys.",
+            config: {
+                responseMimeType: "application/json",
+                responseSchema: {
+                    type: Type.OBJECT,
+                    properties: {
+                        name: { type: Type.STRING },
+                        bio: { type: Type.STRING }
+                    },
+                    required: ["name", "bio"]
+                }
+            }
+        });
+        const jsonStr = response.text.trim();
+        const newCorgi: Corgi = JSON.parse(jsonStr);
+        
+        setGameState(prevState => ({
+            ...prevState,
+            rescuedCorgis: [...prevState.rescuedCorgis, newCorgi]
+        }));
+        setNewlyRescuedCorgi(newCorgi);
+        addLog(`🐾 You rescued ${newCorgi.name}!`);
+
+    } catch (error) {
+        console.error("Error generating corgi:", error);
+        // Fallback corgi
+        const fallbackCorgi: Corgi = { name: "Comet", bio: "A classic corgi with a love for chasing asteroid tails." };
+        setGameState(prevState => ({
+            ...prevState,
+            rescuedCorgis: [...prevState.rescuedCorgis, fallbackCorgi]
+        }));
+        setNewlyRescuedCorgi(fallbackCorgi);
+        addLog(`A shy corgi appeared! You rescued Comet!`);
+    } finally {
+        setIsGeneratingCorgi(false);
+    }
+  };
+
   const onSpin = (result: SpinResult) => {
     const { newState, logMessage } = processSpinResult(gameState, result);
     setGameState(newState);
@@ -171,9 +253,12 @@ const App: React.FC = () => {
   };
 
   const onBuild = () => {
-    const { newState, logMessage } = processBuild(gameState);
+    const { newState, logMessage, corgiToRescue } = processBuild(gameState);
     setGameState(newState);
     if (logMessage) addLog(logMessage);
+    if (corgiToRescue) {
+      handleCorgiRescue();
+    }
   };
 
   const onAction = (opponent: Opponent) => {
@@ -297,6 +382,8 @@ const App: React.FC = () => {
         isOpen={isDailyRewardOpen} 
         onClaim={onClaimDailyReward}
       />
+      <GeneratingCorgiModal isOpen={isGeneratingCorgi} />
+      <NewCorgiModal corgi={newlyRescuedCorgi} onClose={() => setNewlyRescuedCorgi(null)} />
     </div>
   );
 };

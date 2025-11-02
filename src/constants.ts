@@ -15,11 +15,11 @@ export const INITIAL_PLANETS: Planet[] = [
     {
       name: "Corginia Prime",
       buildings: [
-        { name: "Pawsome Pad", cost: 5000, built: false },
-        { name: "Kibble Kitchen", cost: 15000, built: false },
-        { name: "Squeaky Toy Factory", cost: 40000, built: false },
-        { name: "Hydrant Fountain", cost: 100000, built: false },
-        { name: "Statue of the Great Corgi", cost: 250000, built: false },
+        { name: "Pawsome Pad", cost: 5000, built: false, type: 'structure' },
+        { name: "Kibble Kitchen", cost: 15000, built: false, type: 'structure' },
+        { name: "Rescue Beacon", cost: 40000, built: false, type: 'corgi_rescue' },
+        { name: "Hydrant Fountain", cost: 100000, built: false, type: 'structure' },
+        { name: "Astro-Corgi Pod", cost: 250000, built: false, type: 'corgi_rescue' },
       ],
     },
     // Future planets can be added here

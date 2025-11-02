@@ -4,6 +4,7 @@ import Spinner from './Spinner';
 import PlanetView from './PlanetView';
 import EventLog from './EventLog';
 import ActionScreen from './ActionScreen';
+import MyCorgisView from './MyCorgisView';
 
 // --- Leaderboard Component ---
 const BUILDING_VALUE = 80000; // Estimate the value of a single built item
@@ -60,7 +61,7 @@ interface GameScreenProps {
   onActionClose: () => void;
 }
 
-type View = 'planet' | 'leaderboard';
+type View = 'planet' | 'corgis' | 'leaderboard';
 
 const GameScreen: React.FC<GameScreenProps> = ({ gameState, onSpin, onBuild, onAction, onActionClose }) => {
   const [currentView, setCurrentView] = useState<View>('planet');
@@ -69,13 +70,19 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameState, onSpin, onBuild, onA
     <div className="flex justify-center bg-space-light p-1 rounded-full mb-4 shadow-lg">
       <button 
         onClick={() => setCurrentView('planet')}
-        className={`px-6 py-2 rounded-full font-bold transition-colors ${currentView === 'planet' ? 'bg-sky-600 text-white' : 'text-slate-300 hover:bg-slate-600/50'}`}
+        className={`px-4 py-2 rounded-full font-bold transition-colors ${currentView === 'planet' ? 'bg-sky-600 text-white' : 'text-slate-300 hover:bg-slate-600/50'}`}
       >
         Planet
       </button>
       <button 
+        onClick={() => setCurrentView('corgis')}
+        className={`px-4 py-2 rounded-full font-bold transition-colors ${currentView === 'corgis' ? 'bg-sky-600 text-white' : 'text-slate-300 hover:bg-slate-600/50'}`}
+      >
+        My Corgis
+      </button>
+      <button 
         onClick={() => setCurrentView('leaderboard')}
-        className={`px-6 py-2 rounded-full font-bold transition-colors ${currentView === 'leaderboard' ? 'bg-sky-600 text-white' : 'text-slate-300 hover:bg-slate-600/50'}`}
+        className={`px-4 py-2 rounded-full font-bold transition-colors ${currentView === 'leaderboard' ? 'bg-sky-600 text-white' : 'text-slate-300 hover:bg-slate-600/50'}`}
       >
         Rankings
       </button>
@@ -87,11 +94,9 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameState, onSpin, onBuild, onA
       {gameState.gamePhase === 'spinning' ? (
         <>
           <ViewToggle />
-          {currentView === 'planet' ? (
-             <PlanetView gameState={gameState} onBuild={onBuild} />
-          ) : (
-            <Leaderboard gameState={gameState} />
-          )}
+          {currentView === 'planet' && <PlanetView gameState={gameState} onBuild={onBuild} />}
+          {currentView === 'corgis' && <MyCorgisView corgis={gameState.rescuedCorgis} />}
+          {currentView === 'leaderboard' && <Leaderboard gameState={gameState} />}
           <Spinner onSpin={onSpin} disabled={gameState.spins <= 0} />
         </>
       ) : (
