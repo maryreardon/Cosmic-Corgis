@@ -1,14 +1,14 @@
-import { SpinResult, Planet, Opponent } from './types';
+import { SpinResult, Planet } from './types';
 
 export const SPINNER_REWARDS: SpinResult[] = [
   { type: 'kibble', value: 1000 },
   { type: 'kibble', value: 2500 },
   { type: 'big_kibble', value: 10000 },
-  { type: 'shield' },
-  { type: 'play_fetch' },
+  { type: 'kibble', value: 5000 },
+  { type: 'big_kibble', value: 20000 },
   { type: 'huge_kibble', value: 50000 },
-  { type: 'leave_puddle' },
-  { type: 'shield' },
+  { type: 'kibble', value: 2500 },
+  { type: 'big_kibble', value: 10000 },
 ];
 
 export const INITIAL_PLANETS: Planet[] = [
@@ -17,16 +17,10 @@ export const INITIAL_PLANETS: Planet[] = [
       buildings: [
         { name: "Pawsome Pad", cost: 5000, built: false, type: 'structure' },
         { name: "Kibble Kitchen", cost: 15000, built: false, type: 'structure' },
-        { name: "Rescue Beacon", cost: 40000, built: false, type: 'corgi_rescue' },
+        { name: "Comms Tower", cost: 40000, built: false, type: 'structure' },
         { name: "Hydrant Fountain", cost: 100000, built: false, type: 'structure' },
-        { name: "Astro-Corgi Pod", cost: 250000, built: false, type: 'corgi_rescue' },
+        { name: "Observatory", cost: 250000, built: false, type: 'structure' },
       ],
     },
     // Future planets can be added here
-];
-
-export const OPPONENTS_DATA: Opponent[] = [
-    { id: 1, name: "Admiral Fluffington", kibble: 25000, planetName: "Fort Bark" },
-    { id: 2, name: "Sir Waggington", kibble: 78000, planetName: "The Kennel Klub" },
-    { id: 3, name: "Sergeant Scruffy", kibble: 1500, planetName: "Dirtopia" },
 ];

@@ -1,10 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { GoogleGenAI, Type } from "@google/genai";
 import Header from './components/Header';
 import GameScreen from './components/GameScreen';
-import CorgiAvatar from './components/CorgiAvatar';
-import { GameState, SpinResult, Opponent, Corgi } from './types';
-import { getInitialGameState, processSpinResult, processBuild, processRaid, processAttack } from './services/gameLogic';
+import { GameState, SpinResult } from './types';
+import { getInitialGameState, processSpinResult, processBuild } from './services/gameLogic';
 
 const GAME_STATE_KEY = 'cosmicCorgisGameState';
 
@@ -75,102 +73,13 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => (
             </a>
             <div className="bg-space-dark/60 p-3 rounded-lg text-sm text-slate-300">
                 <h3 className="font-bold text-white mb-1">How to Play</h3>
-                <p>🌀 Spin to win Star Kibble and other rewards.</p>
+                <p>🌀 Spin to win Star Kibble.</p>
                 <p>🏗️ Use Kibble to build up your planets.</p>
-                <p>🐾 Build Rescue Beacons to find new corgis!</p>
-                <p>🎾 Attack rivals to earn big bonuses.</p>
-                <p>💧 Raid rivals to steal a portion of their Kibble.</p>
-                <p>🛡️ Shields protect you from attacks!</p>
+                <p>🎉 Complete a planet for a big bonus!</p>
             </div>
         </div>
     </Modal>
 );
-
-// --- Shop Modal ---
-interface ShopModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onPurchase: (item: 'kibble' | 'spins', amount: number) => void;
-}
-const ShopItem: React.FC<{ icon: string, title: string, description: string, onClick: () => void }> = ({ icon, title, description, onClick }) => (
-    <button onClick={onClick} className="w-full flex items-center gap-4 p-3 bg-space-dark/60 rounded-lg text-left hover:bg-sky-500/30 transition-colors">
-        <span className="text-4xl">{icon}</span>
-        <div>
-            <p className="font-bold text-lg text-white">{title}</p>
-            <p className="text-sm text-slate-400">{description}</p>
-        </div>
-        <div className="ml-auto text-center px-4 py-2 bg-green-600 rounded-lg font-bold">
-            Buy
-        </div>
-    </button>
-);
-const ShopModal: React.FC<ShopModalProps> = ({ isOpen, onClose, onPurchase }) => (
-    <Modal title="Galactic Market" isOpen={isOpen} onClose={onClose}>
-        <div className="space-y-3">
-            <ShopItem icon="🍖" title="Bag of Kibble" description="+50,000 Star Kibble" onClick={() => onPurchase('kibble', 50000)} />
-            <ShopItem icon="🍗" title="Crate of Kibble" description="+300,000 Star Kibble" onClick={() => onPurchase('kibble', 300000)} />
-            <ShopItem icon="🌀" title="Spin Pack" description="+10 Spins" onClick={() => onPurchase('spins', 10)} />
-            <ShopItem icon="💫" title="Spin Bundle" description="+50 Spins" onClick={() => onPurchase('spins', 50)} />
-        </div>
-        <p className="text-xs text-slate-500 mt-4">This is a simulation. No real money will be charged.</p>
-    </Modal>
-);
-
-// --- Daily Reward Modal ---
-interface DailyRewardModalProps {
-  isOpen: boolean;
-  onClaim: () => void;
-}
-const DailyRewardModal: React.FC<DailyRewardModalProps> = ({ isOpen, onClaim }) => (
-    <Modal title="Daily Bonus!" isOpen={isOpen} onClose={() => {}} hideCloseButton>
-      <div className="flex flex-col items-center gap-4">
-        <p className="text-lg text-slate-300">Welcome back, space explorer! Here's a reward for logging in today.</p>
-        <div className="text-4xl p-6 bg-space-dark/60 rounded-xl">
-          🌀 +5 Spins
-        </div>
-        <button 
-          onClick={onClaim}
-          className="w-full py-3 font-bold text-xl rounded-lg shadow-lg bg-green-600 hover:bg-green-500 active:scale-95 transition-all"
-        >
-          Claim Reward
-        </button>
-      </div>
-    </Modal>
-);
-
-// --- Corgi Rescue Modals ---
-const GeneratingCorgiModal: React.FC<{ isOpen: boolean }> = ({ isOpen }) => (
-  <Modal title="Contacting Corg-stellation..." isOpen={isOpen} onClose={() => {}} hideCloseButton>
-    <div className="flex flex-col items-center gap-4 text-slate-300">
-      <div className="w-16 h-16 border-4 border-amber-300 border-t-transparent rounded-full animate-spin"></div>
-      <p>A new friend is warping in!</p>
-    </div>
-  </Modal>
-);
-
-interface NewCorgiModalProps {
-  corgi: Corgi | null;
-  onClose: () => void;
-}
-const NewCorgiModal: React.FC<NewCorgiModalProps> = ({ corgi, onClose }) => {
-  if (!corgi) return null;
-
-  return (
-    <Modal title={`You rescued ${corgi.name}!`} isOpen={!!corgi} onClose={onClose}>
-      <div className="flex flex-col items-center gap-4">
-        <CorgiAvatar className="w-32 h-32" />
-        <p className="text-lg text-slate-300 italic">"{corgi.bio}"</p>
-        <button 
-          onClick={onClose}
-          className="w-full mt-2 py-3 font-bold text-xl rounded-lg shadow-lg bg-sky-600 hover:bg-sky-500 active:scale-95 transition-all"
-        >
-          Awesome!
-        </button>
-      </div>
-    </Modal>
-  );
-};
-
 
 // --- Main App Component ---
 const App: React.FC = () => {
@@ -194,10 +103,6 @@ const App: React.FC = () => {
   });
 
   const [isSettingsOpen, setSettingsOpen] = useState(false);
-  const [isShopOpen, setShopOpen] = useState(false);
-  const [isDailyRewardOpen, setDailyRewardOpen] = useState(false);
-  const [isGeneratingCorgi, setIsGeneratingCorgi] = useState(false);
-  const [newlyRescuedCorgi, setNewlyRescuedCorgi] = useState<Corgi | null>(null);
 
   // Save state on change
   useEffect(() => {
@@ -211,50 +116,6 @@ const App: React.FC = () => {
     }));
   }, []);
 
-  const handleCorgiRescue = async () => {
-    setIsGeneratingCorgi(true);
-    try {
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-        const response = await ai.models.generateContent({
-            model: "gemini-2.5-flash",
-            contents: "Generate a cute and funny name and a short, quirky bio for a space corgi astronaut. The corgi is part of a game called Cosmic Corgis. Make the name space-themed or punny. The bio should be 1-2 sentences. Return the response as a JSON object with 'name' and 'bio' keys.",
-            config: {
-                responseMimeType: "application/json",
-                responseSchema: {
-                    type: Type.OBJECT,
-                    properties: {
-                        name: { type: Type.STRING },
-                        bio: { type: Type.STRING }
-                    },
-                    required: ["name", "bio"]
-                }
-            }
-        });
-        const jsonStr = response.text.trim();
-        const newCorgi: Corgi = JSON.parse(jsonStr);
-        
-        setGameState(prevState => ({
-            ...prevState,
-            rescuedCorgis: [...prevState.rescuedCorgis, newCorgi]
-        }));
-        setNewlyRescuedCorgi(newCorgi);
-        addLog(`🐾 You rescued ${newCorgi.name}!`);
-
-    } catch (error) {
-        console.error("Error generating corgi:", error);
-        // Fallback corgi
-        const fallbackCorgi: Corgi = { name: "Comet", bio: "A classic corgi with a love for chasing asteroid tails." };
-        setGameState(prevState => ({
-            ...prevState,
-            rescuedCorgis: [...prevState.rescuedCorgis, fallbackCorgi]
-        }));
-        setNewlyRescuedCorgi(fallbackCorgi);
-        addLog(`A shy corgi appeared! You rescued Comet!`);
-    } finally {
-        setIsGeneratingCorgi(false);
-    }
-  };
-
   const onSpin = (result: SpinResult) => {
     const { newState, logMessage } = processSpinResult(gameState, result);
     setGameState(newState);
@@ -262,93 +123,10 @@ const App: React.FC = () => {
   };
 
   const onBuild = () => {
-    const { newState, logMessage, corgiToRescue } = processBuild(gameState);
+    const { newState, logMessage } = processBuild(gameState);
     setGameState(newState);
     if (logMessage) addLog(logMessage);
-    if (corgiToRescue) {
-      handleCorgiRescue();
-    }
   };
-
-  const onAction = (opponent: Opponent) => {
-    let result;
-    if (gameState.gamePhase === 'raiding') {
-      result = processRaid(gameState, opponent);
-    } else if (gameState.gamePhase === 'attacking') {
-      result = processAttack(gameState, opponent);
-    } else {
-      return;
-    }
-    setGameState(result.newState);
-    addLog(result.logMessage);
-  };
-
-  const onActionClose = () => {
-    setGameState(prevState => ({ ...prevState, gamePhase: 'spinning' }));
-  };
-  
-  const onPurchase = (item: 'kibble' | 'spins', amount: number) => {
-    // In a real app, this would involve a payment gateway.
-    let logMessage = '';
-    setGameState(prevState => {
-        const newState = {...prevState};
-        if (item === 'kibble') {
-            newState.kibble += amount;
-            logMessage = `Purchased ${amount.toLocaleString()} Star Kibble!`;
-        } else if (item === 'spins') {
-            newState.spins += amount;
-            logMessage = `Purchased ${amount} spins!`;
-        }
-        return newState;
-    });
-    addLog(logMessage);
-    setShopOpen(false);
-  };
-
-  const onClaimDailyReward = () => {
-    const today = new Date().toISOString().split('T')[0];
-    setGameState(prevState => ({
-      ...prevState,
-      spins: prevState.spins + 5,
-      lastDailyReward: today,
-    }));
-    addLog("🎁 Daily reward claimed: +5 spins!");
-    setDailyRewardOpen(false);
-  };
-
-  const onToggleCompanion = (corgiName: string) => {
-    setGameState(prevState => {
-      const companions = [...prevState.companionCorgiNames];
-      const isCompanion = companions.includes(corgiName);
-
-      if (isCompanion) {
-        // Remove from companions
-        return {
-          ...prevState,
-          companionCorgiNames: companions.filter(name => name !== corgiName)
-        };
-      } else {
-        // Add to companions, maintaining a max of 2
-        if (companions.length < 2) {
-          companions.push(corgiName);
-        } else {
-          // Replace the oldest companion (first in the array)
-          companions.shift();
-          companions.push(corgiName);
-        }
-        return { ...prevState, companionCorgiNames: companions };
-      }
-    });
-  };
-
-  // Effect to check for daily reward on load
-  useEffect(() => {
-    const today = new Date().toISOString().split('T')[0];
-    if (gameState.lastDailyReward !== today) {
-      setDailyRewardOpen(true);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Only run once on mount
 
   // Effect to add spins over time
   useEffect(() => {
@@ -364,61 +142,18 @@ const App: React.FC = () => {
     return () => clearInterval(spinInterval);
   }, []);
 
-  // Effect to simulate attacks on the player
-  useEffect(() => {
-    const attackInterval = setInterval(() => {
-      if (Math.random() < 0.15) {
-        setGameState(prevState => {
-          if (prevState.gamePhase !== 'spinning') {
-            return prevState; // Don't attack during actions
-          }
-
-          const attacker = prevState.opponents[Math.floor(Math.random() * prevState.opponents.length)];
-          const newState = { ...prevState };
-          let logMessage = '';
-
-          if (prevState.shields > 0) {
-            logMessage = `🛡️ ${attacker.name} tried to attack you, but your shield protected you!`;
-            newState.shields = prevState.shields - 1;
-          } else {
-            const kibbleLost = Math.floor(prevState.kibble * 0.1);
-            logMessage = `⚔️ Oh no! ${attacker.name} attacked you and stole ${kibbleLost.toLocaleString()} kibble!`;
-            newState.kibble = prevState.kibble - kibbleLost;
-          }
-          
-          newState.eventLog = [logMessage, ...prevState.eventLog.slice(0, 19)];
-          return newState;
-        });
-      }
-    }, 10000); // Check every 10 seconds
-
-    return () => clearInterval(attackInterval);
-  }, []);
-
-
   return (
     <div className="bg-space-dark text-white min-h-screen font-sans">
       <Header 
         gameState={gameState} 
-        onOpenShop={() => setShopOpen(true)}
         onOpenSettings={() => setSettingsOpen(true)}
       />
       <GameScreen
         gameState={gameState}
         onSpin={onSpin}
         onBuild={onBuild}
-        onAction={onAction}
-        onActionClose={onActionClose}
-        onToggleCompanion={onToggleCompanion}
       />
       <SettingsModal isOpen={isSettingsOpen} onClose={() => setSettingsOpen(false)} />
-      <ShopModal isOpen={isShopOpen} onClose={() => setShopOpen(false)} onPurchase={onPurchase} />
-      <DailyRewardModal 
-        isOpen={isDailyRewardOpen} 
-        onClaim={onClaimDailyReward}
-      />
-      <GeneratingCorgiModal isOpen={isGeneratingCorgi} />
-      <NewCorgiModal corgi={newlyRescuedCorgi} onClose={() => setNewlyRescuedCorgi(null)} />
     </div>
   );
 };

@@ -16,9 +16,6 @@ const Spinner: React.FC<SpinnerProps> = ({ onSpin, disabled }) => {
       case 'kibble': return '🍖';
       case 'big_kibble': return '🥩';
       case 'huge_kibble': return '🍗';
-      case 'shield': return '🛡️';
-      case 'play_fetch': return '🎾';
-      case 'leave_puddle': return '💧';
       default: return '❓';
     }
   };

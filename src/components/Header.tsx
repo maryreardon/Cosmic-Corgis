@@ -3,31 +3,21 @@ import { GameState } from '../types';
 
 interface HeaderProps {
   gameState: GameState;
-  onOpenShop: () => void;
   onOpenSettings: () => void;
 }
 
-const StatBox: React.FC<{ label: string; value: string | number; icon: string; bgColor: string; onPlusClick?: () => void }> = ({ label, value, icon, bgColor, onPlusClick }) => (
+const StatBox: React.FC<{ label: string; value: string | number; icon: string; bgColor: string; }> = ({ label, value, icon, bgColor }) => (
   <div className={`flex items-center gap-2 p-2 rounded-lg text-white ${bgColor} relative shadow-md`}>
     <span className="text-2xl">{icon}</span>
     <div>
       <div className="text-xs font-bold uppercase opacity-80">{label}</div>
       <div className="text-lg font-bold">{value}</div>
     </div>
-    {onPlusClick && (
-      <button 
-        onClick={onPlusClick} 
-        className="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full text-white font-bold flex items-center justify-center text-sm hover:bg-green-400 transition-transform active:scale-110"
-        aria-label={`Get more ${label}`}
-      >
-        +
-      </button>
-    )}
   </div>
 );
 
-const Header: React.FC<HeaderProps> = ({ gameState, onOpenShop, onOpenSettings }) => {
-  const { kibble, spins, maxSpins, shields } = gameState;
+const Header: React.FC<HeaderProps> = ({ gameState, onOpenSettings }) => {
+  const { kibble, spins, maxSpins } = gameState;
 
   return (
     <header className="bg-space-light/50 backdrop-blur-sm border-b-2 border-slate-500/50 sticky top-0 z-10">
@@ -40,9 +30,8 @@ const Header: React.FC<HeaderProps> = ({ gameState, onOpenShop, onOpenSettings }
              <button onClick={onOpenSettings} className="text-2xl sm:text-3xl hover:opacity-80 transition-opacity active:scale-90" aria-label="Open Settings">⚙️</button>
           </div>
           <div className="flex items-center gap-2 sm:gap-4">
-            <StatBox label="Kibble" value={kibble.toLocaleString()} icon="🍖" bgColor="bg-amber-500/80" onPlusClick={onOpenShop}/>
-            <StatBox label="Spins" value={`${spins}/${maxSpins}`} icon="🌀" bgColor="bg-sky-500/80" onPlusClick={onOpenShop}/>
-            <StatBox label="Shields" value={shields} icon="🛡️" bgColor="bg-green-500/80" />
+            <StatBox label="Kibble" value={kibble.toLocaleString()} icon="🍖" bgColor="bg-amber-500/80" />
+            <StatBox label="Spins" value={`${spins}/${maxSpins}`} icon="🌀" bgColor="bg-sky-500/80" />
           </div>
         </div>
       </div>

@@ -1,19 +1,14 @@
-import { GameState, SpinResult, Planet, Opponent } from '../types';
-import { INITIAL_PLANETS, OPPONENTS_DATA } from '../constants';
+import { GameState, SpinResult, Planet } from '../types';
+import { INITIAL_PLANETS } from '../constants';
 
 export const getInitialGameState = (): GameState => ({
   kibble: 10000,
   spins: 10,
   maxSpins: 10,
-  shields: 1,
   planets: JSON.parse(JSON.stringify(INITIAL_PLANETS)), // Deep copy
   currentPlanetIndex: 0,
-  opponents: JSON.parse(JSON.stringify(OPPONENTS_DATA)), // Deep copy
   gamePhase: 'spinning',
   eventLog: ['Welcome to Cosmic Corgis! 🚀'],
-  rescuedCorgis: [],
-  companionCorgiNames: [],
-  lastDailyReward: undefined,
 });
 
 export const processSpinResult = (state: GameState, result: SpinResult): { newState: GameState; logMessage: string } => {
@@ -28,22 +23,6 @@ export const processSpinResult = (state: GameState, result: SpinResult): { newSt
       newState.kibble += amount;
       logMessage = `You won ${amount.toLocaleString()} Star Kibble! 🍖`;
       break;
-    case 'shield':
-      if (newState.shields < 3) {
-        newState.shields += 1;
-        logMessage = 'You gained a shield! 🛡️';
-      } else {
-        logMessage = 'You found a shield, but you already have the max of 3!';
-      }
-      break;
-    case 'play_fetch':
-      newState.gamePhase = 'attacking';
-      logMessage = 'Play Fetch! Choose a rival to attack!';
-      break;
-    case 'leave_puddle':
-      newState.gamePhase = 'raiding';
-      logMessage = 'Leave Puddle! Choose a rival to steal from!';
-      break;
   }
   
   if (newState.spins > 0) {
@@ -53,10 +32,9 @@ export const processSpinResult = (state: GameState, result: SpinResult): { newSt
   return { newState, logMessage };
 };
 
-export const processBuild = (state: GameState): { newState: GameState; logMessage: string | null; corgiToRescue: boolean; } => {
+export const processBuild = (state: GameState): { newState: GameState; logMessage: string | null; } => {
     let newState = { ...state };
     let logMessage: string | null = null;
-    let corgiToRescue = false;
     
     const currentPlanet = newState.planets[newState.currentPlanetIndex];
     const nextBuilding = currentPlanet.buildings.find(b => !b.built);
@@ -72,11 +50,6 @@ export const processBuild = (state: GameState): { newState: GameState; logMessag
         
         logMessage = `You built the ${nextBuilding.name} on ${currentPlanet.name}!`;
         
-        if (nextBuilding.type === 'corgi_rescue') {
-            corgiToRescue = true;
-            logMessage += ' A rescue signal was sent! 📡';
-        }
-
         const allBuilt = newPlanets[newState.currentPlanetIndex].buildings.every((b: { built: any; }) => b.built);
         if (allBuilt) {
             logMessage += ` 🎉 Planet complete! You've earned a bonus 500,000 Kibble!`;
@@ -87,28 +60,5 @@ export const processBuild = (state: GameState): { newState: GameState; logMessag
         logMessage = `Not enough Kibble to build ${nextBuilding.name}!`;
     }
 
-    return { newState, logMessage, corgiToRescue };
-};
-
-
-export const processRaid = (state: GameState, opponent: Opponent): { newState: GameState; logMessage: string } => {
-  const kibbleStolen = Math.floor(opponent.kibble * 0.25); // Steal 25%
-  const newState = {
-    ...state,
-    kibble: state.kibble + kibbleStolen,
-    gamePhase: 'spinning' as const,
-  };
-  const logMessage = `💧 You left a puddle at ${opponent.planetName} and stole ${kibbleStolen.toLocaleString()} kibble from ${opponent.name}!`;
-  return { newState, logMessage };
-};
-
-export const processAttack = (state: GameState, opponent: Opponent): { newState: GameState; logMessage: string } => {
-  const kibbleWon = 50000;
-  const newState = {
-    ...state,
-    kibble: state.kibble + kibbleWon,
-    gamePhase: 'spinning' as const,
-  };
-  const logMessage = `🎾 You played fetch with ${opponent.name} at ${opponent.planetName} and won ${kibbleWon.toLocaleString()} kibble!`;
-  return { newState, logMessage };
+    return { newState, logMessage };
 };
