@@ -13,6 +13,15 @@
       "sizes": "512x512"
     }
   ],
+  "screenshots": [
+    {
+      "src": "/screenshots/screenshot1.png",
+      "type": "image/png",
+      "sizes": "1280x720",
+      "form_factor": "wide",
+      "label": "Spin the wheel to win big in Cosmic Corgis!"
+    }
+  ],
   "start_url": ".",
   "display": "standalone",
   "theme_color": "#0f172a",
