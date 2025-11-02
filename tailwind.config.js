@@ -27,12 +27,17 @@ export default {
         'slide-up': {
             from: { opacity: '0', transform: 'translateY(20px)' },
             to: { opacity: '1', transform: 'translateY(0)' },
+        },
+        'float': {
+            '0%, 100%': { transform: 'translateY(-4%)' },
+            '50%': { transform: 'translateY(4%)' },
         }
       },
       animation: {
         'spinner-spin': 'spinner-spin 3s cubic-bezier(0.25, 0.1, 0.25, 1) forwards',
         'fade-in': 'fade-in 0.5s ease-out forwards',
         'slide-up': 'slide-up 0.5s ease-out forwards',
+        'float': 'float 4s ease-in-out infinite',
       },
       transitionDuration: {
         '3000': '3000ms',
