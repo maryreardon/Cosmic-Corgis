@@ -32,8 +32,8 @@ const Header: React.FC<HeaderProps> = ({ gameState, onOpenShop, onOpenSettings }
   return (
     <header className="bg-space-light/50 backdrop-blur-sm border-b-2 border-slate-500/50 sticky top-0 z-10">
       <div className="container mx-auto px-4 py-2">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+          <div className="flex items-center justify-between w-full sm:w-auto sm:gap-4">
              <h1 className="text-2xl sm:text-4xl font-display text-amber-300 tracking-wider" style={{textShadow: '2px 2px #000'}}>
                 Cosmic Corgis
              </h1>
