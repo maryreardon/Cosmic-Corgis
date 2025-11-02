@@ -11,6 +11,7 @@ export const getInitialGameState = (): GameState => ({
   opponents: JSON.parse(JSON.stringify(OPPONENTS_DATA)), // Deep copy
   gamePhase: 'spinning',
   eventLog: ['Welcome to Cosmic Corgis! 🚀'],
+  lastDailyReward: undefined,
 });
 
 export const processSpinResult = (state: GameState, result: SpinResult): { newState: GameState; logMessage: string } => {

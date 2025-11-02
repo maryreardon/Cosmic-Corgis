@@ -28,6 +28,7 @@ export interface GameState {
   opponents: Opponent[];
   gamePhase: GamePhase;
   eventLog: string[];
+  lastDailyReward?: string; // YYYY-MM-DD
 }
 
 export interface SpinResult {
