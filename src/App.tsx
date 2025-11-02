@@ -269,7 +269,7 @@ const App: React.FC = () => {
 
 
   return (
-    <div className="bg-space-dark text-white min-h-screen font-sans">
+    <div className="bg-space-dark text-white min-h-screen font-sans flex flex-col">
       <Header 
         gameState={gameState} 
         onOpenShop={() => setShopOpen(true)}
