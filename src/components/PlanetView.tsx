@@ -1,5 +1,5 @@
 import React from 'react';
-import { GameState } from '../types';
+import { Corgi, GameState } from '../types';
 import CorgiAvatar from './CorgiAvatar';
 
 interface PlanetViewProps {
@@ -9,7 +9,7 @@ interface PlanetViewProps {
 
 const PlanetView: React.FC<PlanetViewProps> = ({ gameState, onBuild }) => {
   const currentPlanet = gameState.planets[gameState.currentPlanetIndex];
-  const { rescuedCorgis } = gameState;
+  const { rescuedCorgis, companionCorgiNames } = gameState;
   const nextBuilding = currentPlanet.buildings.find(b => !b.built);
   const buildingsComplete = currentPlanet.buildings.filter(b => b.built).length;
   const totalBuildings = currentPlanet.buildings.length;
@@ -17,8 +17,10 @@ const PlanetView: React.FC<PlanetViewProps> = ({ gameState, onBuild }) => {
 
   const canAfford = nextBuilding ? gameState.kibble >= nextBuilding.cost : false;
 
-  // Show the 2 most recently rescued corgis
-  const corgisToShow = rescuedCorgis.slice(-2); 
+  // Show the companion corgis
+  const companionCorgis = companionCorgiNames
+    .map(name => rescuedCorgis.find(c => c.name === name))
+    .filter((c): c is Corgi => c !== undefined);
 
   return (
     <div className="w-full max-w-lg animate-slide-up">
@@ -32,28 +34,28 @@ const PlanetView: React.FC<PlanetViewProps> = ({ gameState, onBuild }) => {
             </div>
 
             {/* Rescued Corgis */}
-            {corgisToShow.length > 0 && (
+            {companionCorgis.length > 0 && (
                 <div 
                     className="absolute bottom-0 left-4"
                     style={{ animation: `float 3.5s ease-in-out infinite 0.5s` }}
                 >
-                    <div className="group relative" title={corgisToShow[0].name}>
+                    <div className="group relative" title={companionCorgis[0].name}>
                         <CorgiAvatar className="w-20 h-20" />
                         <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-max bg-black/70 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                            {corgisToShow[0].name}
+                            {companionCorgis[0].name}
                         </div>
                     </div>
                 </div>
             )}
-            {corgisToShow.length > 1 && (
+            {companionCorgis.length > 1 && (
                  <div 
                     className="absolute bottom-0 right-4"
                     style={{ animation: `float 4s ease-in-out infinite 1s` }}
                 >
-                    <div className="group relative" title={corgisToShow[1].name}>
+                    <div className="group relative" title={companionCorgis[1].name}>
                         <CorgiAvatar className="w-20 h-20" />
                          <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-max bg-black/70 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                            {corgisToShow[1].name}
+                            {companionCorgis[1].name}
                         </div>
                     </div>
                 </div>

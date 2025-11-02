@@ -59,11 +59,12 @@ interface GameScreenProps {
   onBuild: () => void;
   onAction: (opponent: Opponent) => void;
   onActionClose: () => void;
+  onToggleCompanion: (corgiName: string) => void;
 }
 
 type View = 'planet' | 'corgis' | 'leaderboard';
 
-const GameScreen: React.FC<GameScreenProps> = ({ gameState, onSpin, onBuild, onAction, onActionClose }) => {
+const GameScreen: React.FC<GameScreenProps> = ({ gameState, onSpin, onBuild, onAction, onActionClose, onToggleCompanion }) => {
   const [currentView, setCurrentView] = useState<View>('planet');
   
   const ViewToggle: React.FC = () => (
@@ -95,7 +96,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ gameState, onSpin, onBuild, onA
         <>
           <ViewToggle />
           {currentView === 'planet' && <PlanetView gameState={gameState} onBuild={onBuild} />}
-          {currentView === 'corgis' && <MyCorgisView corgis={gameState.rescuedCorgis} />}
+          {currentView === 'corgis' && <MyCorgisView corgis={gameState.rescuedCorgis} companionCorgiNames={gameState.companionCorgiNames} onToggleCompanion={onToggleCompanion} />}
           {currentView === 'leaderboard' && <Leaderboard gameState={gameState} />}
           <Spinner onSpin={onSpin} disabled={gameState.spins <= 0} />
         </>

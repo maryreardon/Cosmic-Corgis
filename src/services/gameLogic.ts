@@ -12,6 +12,7 @@ export const getInitialGameState = (): GameState => ({
   gamePhase: 'spinning',
   eventLog: ['Welcome to Cosmic Corgis! 🚀'],
   rescuedCorgis: [],
+  companionCorgiNames: [],
   lastDailyReward: undefined,
 });
 

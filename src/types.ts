@@ -35,6 +35,7 @@ export interface GameState {
   gamePhase: GamePhase;
   eventLog: string[];
   rescuedCorgis: Corgi[];
+  companionCorgiNames: string[];
   lastDailyReward?: string; // YYYY-MM-DD
 }
 

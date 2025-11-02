@@ -12,6 +12,8 @@ export const getInitialGameState = (): GameState => ({
   gamePhase: 'spinning',
   eventLog: ['Welcome to Cosmic Corgis! 🚀'],
   rescuedCorgis: [],
+  companionCorgiNames: [],
+  lastDailyReward: undefined,
 });
 
 export const processSpinResult = (state: GameState, result: SpinResult): { newState: GameState; logMessage: string } => {
@@ -69,7 +71,7 @@ export const processBuild = (state: GameState): { newState: GameState; logMessag
         newState.planets = newPlanets;
         
         logMessage = `You built the ${nextBuilding.name} on ${currentPlanet.name}!`;
-
+        
         if (nextBuilding.type === 'corgi_rescue') {
             corgiToRescue = true;
             logMessage += ' A rescue signal was sent! 📡';

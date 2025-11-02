@@ -2,23 +2,34 @@ import React from 'react';
 import { Corgi } from '../types';
 import CorgiAvatar from './CorgiAvatar';
 
-const CorgiCard: React.FC<{ corgi: Corgi }> = ({ corgi }) => (
-    <div className="bg-space-dark/60 p-4 rounded-lg text-center flex flex-col items-center gap-2 border border-slate-600">
+const CorgiCard: React.FC<{ corgi: Corgi; isCompanion: boolean; onToggleCompanion: (name: string) => void }> = ({ corgi, isCompanion, onToggleCompanion }) => (
+    <div className="bg-space-dark/60 p-4 rounded-lg flex flex-col items-center gap-2 border border-slate-600 relative">
+        <button 
+            onClick={() => onToggleCompanion(corgi.name)}
+            className="absolute top-2 right-2 text-2xl transition-transform hover:scale-125 active:scale-110"
+            title={isCompanion ? "Remove from companions" : "Set as companion"}
+            aria-label={isCompanion ? `Remove ${corgi.name} from companions` : `Set ${corgi.name} as companion`}
+        >
+            {isCompanion ? '⭐' : '☆'}
+        </button>
         <CorgiAvatar className="w-24 h-24" />
         <h3 className="text-xl font-bold text-amber-300">{corgi.name}</h3>
-        <p className="text-sm text-slate-300 flex-grow">"{corgi.bio}"</p>
+        <p className="text-sm text-slate-300 flex-grow text-center">"{corgi.bio}"</p>
     </div>
 );
 
 interface MyCorgisViewProps {
   corgis: Corgi[];
+  companionCorgiNames: string[];
+  onToggleCompanion: (corgiName: string) => void;
 }
 
-const MyCorgisView: React.FC<MyCorgisViewProps> = ({ corgis }) => {
+const MyCorgisView: React.FC<MyCorgisViewProps> = ({ corgis, companionCorgiNames, onToggleCompanion }) => {
   return (
     <div className="w-full max-w-lg animate-slide-up">
         <div className="bg-space-light/50 backdrop-blur-sm p-4 rounded-xl border border-slate-600/50">
-            <h2 className="text-2xl font-bold text-center text-amber-300 mb-4">My Corgi Crew</h2>
+            <h2 className="text-2xl font-bold text-center text-amber-300 mb-2">My Corgi Crew</h2>
+            <p className="text-xs text-center text-slate-400 mb-4">Select up to 2 companions with the star (⭐) to join you on your planet!</p>
             {corgis.length === 0 ? (
                 <div className="text-center text-slate-400 p-8">
                     <p className="text-5xl mb-4">🐾</p>
@@ -28,7 +39,12 @@ const MyCorgisView: React.FC<MyCorgisViewProps> = ({ corgis }) => {
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {corgis.map((corgi) => (
-                        <CorgiCard key={corgi.name} corgi={corgi} />
+                        <CorgiCard 
+                            key={corgi.name} 
+                            corgi={corgi} 
+                            isCompanion={companionCorgiNames.includes(corgi.name)}
+                            onToggleCompanion={onToggleCompanion}
+                        />
                     ))}
                 </div>
             )}

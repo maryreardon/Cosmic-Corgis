@@ -175,12 +175,21 @@ const NewCorgiModal: React.FC<NewCorgiModalProps> = ({ corgi, onClose }) => {
 // --- Main App Component ---
 const App: React.FC = () => {
   const [gameState, setGameState] = useState<GameState>(() => {
+    const initialState = getInitialGameState();
     try {
       const savedState = localStorage.getItem(GAME_STATE_KEY);
-      return savedState ? JSON.parse(savedState) : getInitialGameState();
+      if (savedState) {
+        const parsedState = JSON.parse(savedState);
+        // Merge the saved state over the initial state. This ensures that if new
+        // properties are added to the game state, old saves don't break the game.
+        return { ...initialState, ...parsedState };
+      }
+      return initialState;
     } catch (error) {
-      console.error("Could not load game state from localStorage", error);
-      return getInitialGameState();
+      console.error("Could not load game state from localStorage. Resetting state.", error);
+      // If parsing fails, the saved state is likely corrupt. Clear it.
+      localStorage.removeItem(GAME_STATE_KEY);
+      return initialState;
     }
   });
 
@@ -307,6 +316,31 @@ const App: React.FC = () => {
     setDailyRewardOpen(false);
   };
 
+  const onToggleCompanion = (corgiName: string) => {
+    setGameState(prevState => {
+      const companions = [...prevState.companionCorgiNames];
+      const isCompanion = companions.includes(corgiName);
+
+      if (isCompanion) {
+        // Remove from companions
+        return {
+          ...prevState,
+          companionCorgiNames: companions.filter(name => name !== corgiName)
+        };
+      } else {
+        // Add to companions, maintaining a max of 2
+        if (companions.length < 2) {
+          companions.push(corgiName);
+        } else {
+          // Replace the oldest companion (first in the array)
+          companions.shift();
+          companions.push(corgiName);
+        }
+        return { ...prevState, companionCorgiNames: companions };
+      }
+    });
+  };
+
   // Effect to check for daily reward on load
   useEffect(() => {
     const today = new Date().toISOString().split('T')[0];
@@ -375,6 +409,7 @@ const App: React.FC = () => {
         onBuild={onBuild}
         onAction={onAction}
         onActionClose={onActionClose}
+        onToggleCompanion={onToggleCompanion}
       />
       <SettingsModal isOpen={isSettingsOpen} onClose={() => setSettingsOpen(false)} />
       <ShopModal isOpen={isShopOpen} onClose={() => setShopOpen(false)} onPurchase={onPurchase} />
