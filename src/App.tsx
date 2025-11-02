@@ -250,22 +250,31 @@ const App: React.FC = () => {
     const attackInterval = setInterval(() => {
       if (Math.random() < 0.15) {
         setGameState(prevState => {
-          if (prevState.gamePhase !== 'spinning') return prevState; // Don't attack during actions
+          if (prevState.gamePhase !== 'spinning') {
+            return prevState; // Don't attack during actions
+          }
+
           const attacker = prevState.opponents[Math.floor(Math.random() * prevState.opponents.length)];
+          const newState = { ...prevState };
+          let logMessage = '';
+
           if (prevState.shields > 0) {
-            addLog(`🛡️ ${attacker.name} tried to attack you, but your shield protected you!`);
-            return { ...prevState, shields: prevState.shields - 1 };
+            logMessage = `🛡️ ${attacker.name} tried to attack you, but your shield protected you!`;
+            newState.shields = prevState.shields - 1;
           } else {
             const kibbleLost = Math.floor(prevState.kibble * 0.1);
-            addLog(`⚔️ Oh no! ${attacker.name} attacked you and stole ${kibbleLost.toLocaleString()} kibble!`);
-            return { ...prevState, kibble: prevState.kibble - kibbleLost };
+            logMessage = `⚔️ Oh no! ${attacker.name} attacked you and stole ${kibbleLost.toLocaleString()} kibble!`;
+            newState.kibble = prevState.kibble - kibbleLost;
           }
+          
+          newState.eventLog = [logMessage, ...prevState.eventLog.slice(0, 19)];
+          return newState;
         });
       }
     }, 10000); // Check every 10 seconds
 
     return () => clearInterval(attackInterval);
-  }, [addLog]);
+  }, []);
 
 
   return (
