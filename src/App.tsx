@@ -153,9 +153,13 @@ const App: React.FC = () => {
         onSpin={onSpin}
         onBuild={onBuild}
       />
-      <footer className="text-center p-2 text-xs text-slate-400">
+      <footer className="text-center p-2 text-xs text-slate-400 flex justify-center items-center gap-x-3">
         <a href="/privacy-policy.html" target="_blank" rel="noopener noreferrer" className="hover:text-white underline">
           Privacy Policy
+        </a>
+        <span className="opacity-50">|</span>
+        <a href="https://play.google.com/store/apps/details?id=com.cosmiccorgis.game" target="_blank" rel="noopener noreferrer" className="hover:text-white underline">
+          Get on Google Play
         </a>
       </footer>
       <SettingsModal isOpen={isSettingsOpen} onClose={() => setSettingsOpen(false)} />
