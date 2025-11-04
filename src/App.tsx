@@ -143,7 +143,7 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <div className="bg-space-dark text-white min-h-screen font-sans">
+    <div className="bg-space-dark text-white min-h-screen font-sans flex flex-col">
       <Header 
         gameState={gameState} 
         onOpenSettings={() => setSettingsOpen(true)}
@@ -153,6 +153,11 @@ const App: React.FC = () => {
         onSpin={onSpin}
         onBuild={onBuild}
       />
+      <footer className="text-center p-2 text-xs text-slate-400">
+        <a href="/privacy-policy.html" target="_blank" rel="noopener noreferrer" className="hover:text-white underline">
+          Privacy Policy
+        </a>
+      </footer>
       <SettingsModal isOpen={isSettingsOpen} onClose={() => setSettingsOpen(false)} />
     </div>
   );

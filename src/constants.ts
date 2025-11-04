@@ -1,4 +1,4 @@
-import { SpinResult, Planet } from './types';
+import { SpinResult, Planet, Opponent } from './types';
 
 export const SPINNER_REWARDS: SpinResult[] = [
   { type: 'kibble', value: 1000 },
@@ -23,4 +23,10 @@ export const INITIAL_PLANETS: Planet[] = [
       ],
     },
     // Future planets can be added here
+];
+
+export const OPPONENTS_DATA: Opponent[] = [
+    { id: 1, name: 'Admiral Fluffington', planetName: 'Flufftopia', kibble: 250000 },
+    { id: 2, name: 'Sir Waggington', planetName: 'The Waglands', kibble: 150000 },
+    { id: 3, name: 'Sergeant Scruffy', planetName: 'Fort Scruff', kibble: 400000 },
 ];
